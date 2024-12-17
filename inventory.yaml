@@ -1,0 +1,14 @@
+all:
+  hosts:
+#    openstack-master:
+#      ansible_host: 158.37.66.19
+#      ansible_user: ubuntu
+    openstack-worker:
+      ansible_host: 158.37.66.200
+      ansible_user: ubuntu
+#    vm1:
+#      ansible_host: vm1
+#      ansible_user: ubuntu
+#    vm2:
+#      ansible_host: vm2
+#      ansible_user: ubuntu

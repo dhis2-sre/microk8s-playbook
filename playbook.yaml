@@ -1,0 +1,103 @@
+---
+- name: Install MicroK8s on Ubuntu
+  hosts: all
+  gather_facts: yes # Ensure facts are gathered to access ansible_hostname
+  become: true
+  become_method: sudo
+  vars:
+    microk8s_version: "latest"
+    user: "{{ ansible_user_id }}"
+    cert_manager_email: "someone@something.com"
+    username: "{{ ansible_user }}"
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install snapd
+      apt:
+        name: snapd
+        state: present
+
+    - name: Ensure snapd service is started
+      systemd:
+        name: snapd
+        state: started
+        enabled: yes
+
+    - name: Install MicroK8s
+      snap:
+        name: microk8s
+        classic: yes
+        channel: "{{ microk8s_version }}"
+        state: present
+
+    - name: Add user to microk8s group
+      user:
+        name: "{{ user }}"
+        groups: microk8s
+        append: yes
+
+    - name: Enable common MicroK8s addons
+      shell: "microk8s enable dns ingress metrics-server cert-manager hostpath-storage"
+      become_user: root
+
+    - name: Display MicroK8s status
+      shell: "microk8s status --wait-ready"
+      register: microk8s_status
+
+    - name: Refresh MicroK8s certificates
+      shell: "microk8s refresh-certs -e ca.crt"
+
+    - name: Get kubectl config
+      shell: "microk8s config > kube-config.yaml"
+
+    - name: Install Helm
+      snap:
+        name: helm
+        classic: yes
+        state: present
+
+    - name: Install Cert issuer
+      community.kubernetes.helm:
+        kubeconfig: ./kube-config.yaml
+        name: cert-issuer
+        chart_repo_url: https://tonsv2.github.io/cert-issuer-chart
+        chart_ref: cert-issuer
+        release_state: present
+        namespace: cert-manager
+        create_namespace: true
+        values:
+          email: "{{ cert_manager_email }}"
+          server: https://acme-v02.api.letsencrypt.org/directory
+          ingressClass: public
+
+    - name: Install Fish shell
+      apt:
+        name: fish
+        state: present
+      tags: install
+
+    - name: Verify Fish shell path is valid
+      stat:
+        path: /usr/bin/fish
+      register: fish_shell
+
+    - name: Set default shell for user to Fish (if not already set)
+      command: chsh -s /usr/bin/fish "{{ username }}"
+      when: fish_shell.stat.exists
+      tags: set-default-shell
+
+    - fetch:
+        src: ./kube-config.yaml
+        dest: ./kubeconfig/{{ inventory_hostname }}.yaml
+        flat: yes
+
+    - debug:
+        var: microk8s_status.stdout
+
+  handlers:
+    - name: Reload user's group membership
+      command: newgrp microk8s
+      when: user == ansible_user_id
