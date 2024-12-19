@@ -1,0 +1,73 @@
+- name: Install MicroCeph
+  hosts: all
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  vars:
+    microceph_version: latest/edge
+  tasks:
+    - name: Install MicroCeph
+      snap:
+        name: microceph
+        channel: "{{ microceph_version }}"
+        state: present
+
+- name: Configure MicroCeph Master Node
+  hosts: master_nodes
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Bootstrap MicroCeph
+      command: microceph cluster bootstrap
+
+    - name: Generate a token for each worker node
+      command: microceph cluster add {{ item }}
+      register: join_tokens_raw
+      with_items: "{{ groups['worker_nodes'] }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Initialize join_tokens as an empty dictionary
+      set_fact:
+        join_tokens: {}
+
+    - name: Add tokens to join_tokens dictionary
+      set_fact:
+        join_tokens: "{{ join_tokens | combine({groups['worker_nodes'][item]: join_tokens_raw.results[item].stdout}) }}"
+      loop: "{{ range(0, groups['worker_nodes'] | length) | list }}"
+      loop_control:
+        loop_var: item
+
+- name: Join MicroCeph Worker Nodes
+  hosts: worker_nodes
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Join worker node to the Ceph cluster
+      command: "microceph cluster join {{ hostvars[groups['master_nodes'][0]].join_tokens[inventory_hostname] }}"
+
+- name: Add Disks to MicroCeph Nodes
+  hosts: all
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Add disk
+      command: microceph disk add --wipe /dev/sdb
+
+- name: Finalize MicroCeph Master Node
+  hosts: master_nodes
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  tasks:
+    - name: Enable MicroCeph
+      command: microk8s enable rook-ceph
+
+    - name: Connect to MicroCeph Cluster
+      command: microk8s connect-external-ceph
+
+    - name: Set ceph-rbd as the default storage class
+      command: >
+        microk8s kubectl patch storageclass ceph-rbd -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
