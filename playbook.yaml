@@ -1,15 +1,14 @@
----
-- name: Install MicroK8s on Ubuntu
+- name: Install Microk8s
   hosts: all
-  gather_facts: yes # Ensure facts are gathered to access ansible_hostname
+  gather_facts: yes
   become: true
   become_method: sudo
   vars:
-    microk8s_version: "latest"
+    microk8s_version: latest
+    microk8s_addons: dns ingress metrics-server cert-manager
     user: "{{ ansible_user_id }}"
-    cert_manager_email: "someone@something.com"
+    cert_manager_email: someone@something.com
     username: "{{ ansible_user }}"
-
   tasks:
     - name: Update apt cache
       apt:
@@ -40,18 +39,23 @@
         append: yes
 
     - name: Enable common MicroK8s addons
-      shell: "microk8s enable dns ingress metrics-server cert-manager hostpath-storage"
+      shell: microk8s enable {{ microk8s_addons }}
       become_user: root
 
     - name: Display MicroK8s status
-      shell: "microk8s status --wait-ready"
+      shell: microk8s status --wait-ready
       register: microk8s_status
 
     - name: Refresh MicroK8s certificates
-      shell: "microk8s refresh-certs -e ca.crt"
+      shell: microk8s refresh-certs -e ca.crt
 
     - name: Get kubectl config
-      shell: "microk8s config > kube-config.yaml"
+      shell: microk8s config > kube-config.yaml
+
+    - fetch:
+        src: ./kube-config.yaml
+        dest: ./kubeconfig/{{ inventory_hostname }}.yaml
+        flat: yes
 
     - name: Install Helm
       snap:
@@ -73,6 +77,68 @@
           server: https://acme-v02.api.letsencrypt.org/directory
           ingressClass: public
 
+    - debug:
+        var: microk8s_status.stdout
+
+  handlers:
+    - name: Reload user's group membership
+      command: newgrp microk8s
+      when: user == ansible_user_id
+
+- name: Get and execute join commands
+  hosts: master_nodes
+  tasks:
+    - name: Generate and capture join commands for worker nodes
+      shell: |
+        for i in $(seq 1 {{ groups['worker_nodes'] | length }}); do
+          microk8s add-node | grep microk8s | head -2 | tail -1;
+        done
+      register: join_commands
+      become: true
+
+    - name: Split join commands into a list
+      set_fact:
+        join_commands_list: "{{ join_commands.stdout_lines }}"
+
+- name: Join worker nodes
+  hosts: worker_nodes
+  tasks:
+    - name: Join each worker node to the cluster
+      command: "{{ hostvars[groups['master_nodes'][0]].join_commands_list[play_hosts.index(inventory_hostname)] }}"
+      become: true
+
+#- name: Install MicroCeph
+#  hosts: all
+#  gather_facts: yes
+#  become: true
+#  become_method: sudo
+#  vars:
+#    microceph_version: latest/edge
+#    user: "{{ ansible_user_id }}"
+#  tasks:
+#    - name: Install MicroCeph
+#      snap:
+#        name: microceph
+#        channel: "{{ microceph_version }}"
+#        state: present
+#
+##    - name: Bootstrap MicroCeph
+##      shell: microceph cluster bootstrap
+#
+##    - name: Add disk to MicroCeph
+##      shell: microceph disk add --wipe /dev/sdb
+#
+##    - name: Connect MicroCeph to MicroK8s
+##      shell: microk8s enable rook-ceph
+
+- name: Configure Fish
+  hosts: all
+  gather_facts: yes
+  become: true
+  become_method: sudo
+  vars:
+    username: "{{ ansible_user }}"
+  tasks:
     - name: Install Fish shell
       apt:
         name: fish
@@ -88,16 +154,3 @@
       command: chsh -s /usr/bin/fish "{{ username }}"
       when: fish_shell.stat.exists
       tags: set-default-shell
-
-    - fetch:
-        src: ./kube-config.yaml
-        dest: ./kubeconfig/{{ inventory_hostname }}.yaml
-        flat: yes
-
-    - debug:
-        var: microk8s_status.stdout
-
-  handlers:
-    - name: Reload user's group membership
-      command: newgrp microk8s
-      when: user == ansible_user_id
