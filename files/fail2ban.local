@@ -1,0 +1,32 @@
+[DEFAULT]
+bantime  = 1h          # Ban duration (1 hour). Increase as needed.
+findtime = 10m         # Time window to count failed attempts (10 minutes).
+maxretry = 3           # Maximum failed attempts before banning.
+
+# IP whitelist
+#ignoreip = 127.0.0.1/8 ::1  # Localhost
+#ignoreip = 192.168.1.0/24    # Trusted internal IP range (optional)
+
+# Action to take on ban
+banaction = iptables-multiport  # Default action for banning
+banaction_allports = iptables-allports
+backend = auto                # Auto-detect the log processing backend (e.g., systemd or polling)
+
+# Email notifications (optional)
+#destemail = admin@example.com
+destemail = devops@dhis2.org
+sendername = Fail2Ban
+mta = sendmail               # Set the mail transfer agent (sendmail/postfix).
+
+[sshd]
+enabled = true               # Enable protection for SSH
+port = ssh                   # Default SSH port (22). Update if you're using a custom port.
+logpath = /var/log/auth.log  # Log file for SSH authentication attempts
+maxretry = 3                 # Override maxretry for SSH (if different)
+
+# Ban on first attempt from known malicious sources
+[sshd-ddos]
+enabled = true
+port = ssh
+logpath = /var/log/auth.log
+maxretry = 1                 # Immediate ban for obvious DDoS attempts
