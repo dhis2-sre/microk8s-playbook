@@ -11,3 +11,4 @@ ansible-playbook -i inventory.yaml playbooks/fish.yaml playbooks/microk8s.yaml p
 
 # TODO
 * Use a master playbook...
+* Remove sudo without password capabilities

@@ -1,0 +1,155 @@
+- name: Harden Ubuntu Server
+  hosts: all
+  become: true
+
+  vars:
+    ssh_port: 2222
+    allowed_ssh_users:
+      - ubuntu
+
+  tasks:
+
+    # 1. Update and Upgrade
+    - name: Update and upgrade apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install unattended-upgrades
+      apt:
+        name: unattended-upgrades
+        state: present
+
+    - name: Enable unattended-upgrades
+      lineinfile:
+        path: /etc/apt/apt.conf.d/20auto-upgrades
+        regexp: '^\s*\"(APT::Periodic::Unattended-Upgrade)\".*;'
+        line: '"APT::Periodic::Unattended-Upgrade" "1";'
+
+    # 2. User and Authentication Management
+    - name: Disable root login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin'
+        line: 'PermitRootLogin no'
+        state: present
+
+    - name: Disable password authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+        state: present
+
+    - name: Allow specific SSH users
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "AllowUsers {{ allowed_ssh_users | join(' ') }}"
+        state: present
+
+    - name: Change SSH port
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Port'
+        line: "Port {{ ssh_port }}"
+        state: present
+
+    - name: Restart SSH service
+      service:
+        name: sshd
+        state: restarted
+
+    # 3. Configure UFW
+    - name: Install UFW
+      apt:
+        name: ufw
+        state: present
+
+    - name: Allow SSH on custom port
+      ufw:
+        rule: allow
+        port: "{{ ssh_port }}"
+        proto: tcp
+
+    - name: Set UFW default policies
+      ufw:
+        state: enabled
+        logging: on
+        default: "deny incoming"
+
+    - name: Allow specific ports
+      ufw:
+        rule: allow
+        port: [80, 443, 2222, 16443]
+        proto: tcp
+
+    # 4. Minimize Attack Surface
+    - name: Remove unnecessary packages
+      apt:
+        name:
+          - telnet
+          - ftp
+          - rsh-client
+        state: absent
+
+    - name: Disable unnecessary services
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      loop:
+        - cups
+        - avahi-daemon
+
+    # 5. Secure /tmp
+    - name: Secure /tmp partition
+      mount:
+        path: /tmp
+        src: tmpfs
+        fstype: tmpfs
+        opts: "defaults,noexec,nosuid,nodev"
+        state: mounted
+
+    # 6. Logging and Monitoring
+    - name: Install fail2ban
+      apt:
+        name: fail2ban
+        state: present
+
+    - name: Configure fail2ban
+      copy:
+        src: fail2ban.local
+        dest: /etc/fail2ban/jail.local
+
+    - name: Restart fail2ban
+      service:
+        name: fail2ban
+        state: restarted
+
+    # 7. Kernel Hardening
+    - name: Set kernel parameters for hardening
+      sysctl:
+        name: "{{ item.key }}"
+        value: "{{ item.value }}"
+        state: present
+      loop:
+        - { key: "net.ipv4.tcp_syncookies", value: "1" }
+        - { key: "net.ipv4.conf.all.rp_filter", value: "1" }
+        - { key: "net.ipv4.conf.all.accept_source_route", value: "0" }
+        - { key: "net.ipv4.icmp_echo_ignore_broadcasts", value: "1" }
+        - { key: "net.ipv4.conf.all.log_martians", value: "1" }
+
+    - name: Apply sysctl changes
+      command: sysctl -p
+
+    # 8. Install Security Tools
+    - name: Install Lynis for auditing
+      apt:
+        name: lynis
+        state: present
+
+    # 10. Restart for Changes
+    - name: Reboot the system if required
+      reboot:
+        msg: "Rebooting for security hardening changes to take effect."
+        pre_reboot_delay: 30
