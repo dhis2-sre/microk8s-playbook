@@ -74,3 +74,10 @@
     - name: Set ceph-rbd as the default storage class
       command: >
         microk8s kubectl patch storageclass ceph-rbd -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
+
+    - name: Display MicroK8s status
+      command: microceph.ceph status
+      register: ceph_status
+
+    - debug:
+        var: ceph_status.stdout
