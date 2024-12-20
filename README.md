@@ -1,7 +1,7 @@
 # Run
 ```sh
 #ansible-playbook -i inventory.yaml playbook.yaml
-ansible-playbook -i inventory.yaml playbooks/fish.yaml playbooks/harden.yaml playbooks/microk8s.yaml playbooks/microceph.yaml 
+ansible-playbook -i inventory.yaml playbooks/fish.yaml playbooks/harden.yaml playbooks/microk8s.yaml playbooks/microceph.yaml playbooks/reboot.yaml
 ```
 
 

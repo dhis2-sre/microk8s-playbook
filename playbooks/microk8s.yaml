@@ -3,8 +3,11 @@
   gather_facts: yes
   become: true
   become_method: sudo
+
   vars:
+    ansible_python_interpreter: /usr/bin/python3.10
     microk8s_version: latest
+
   tasks:
     - name: Update apt cache
       apt:
@@ -63,12 +66,6 @@
     user: "{{ ansible_user_id }}"
     cert_manager_email: someone@something.com
   tasks:
-#    - name: Add user to microk8s group
-#      user:
-#        name: ubuntu
-#        groups: microk8s
-#        append: yes
-
     - name: Enable common MicroK8s addons
       command: microk8s enable {{ microk8s_addons }}
 

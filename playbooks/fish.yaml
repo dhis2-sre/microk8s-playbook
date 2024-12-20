@@ -3,8 +3,11 @@
   gather_facts: yes
   become: true
   become_method: sudo
+
   vars:
-    username: "{{ ansible_user }}"
+    ansible_python_interpreter: /usr/bin/python3.10
+    username: ubuntu
+
   tasks:
     - name: Update apt cache
       apt:

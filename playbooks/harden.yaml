@@ -3,11 +3,9 @@
   become: true
 
   vars:
-#    ssh_port: 2222
-    ssh_port: 22
+    ansible_python_interpreter: /usr/bin/python3.10
     allowed_ssh_users:
       - ubuntu
-    ansible_python_interpreter: /usr/bin/python3.10
 
   tasks:
     # 1. Update and Upgrade
@@ -47,14 +45,6 @@
         path: /etc/ssh/sshd_config
         line: "AllowUsers {{ allowed_ssh_users | join(' ') }}"
         state: present
-
-# Assuming the cluster runs on a cloud and network security groups define which ports are open this should be done when creating the VM
-#    - name: Change SSH port
-#      lineinfile:
-#        path: /etc/ssh/sshd_config
-#        regexp: '^#?Port'
-#        line: "Port {{ ssh_port }}"
-#        state: present
 
     - name: Restart SSH service
       service:
@@ -143,9 +133,3 @@
 
     # 7. Configure Firewall
     - include_tasks: ./_firewall.yaml
-
-    # 8. Restart for Changes
-    - name: Reboot the system if required
-      reboot:
-        msg: "Rebooting for security hardening changes to take effect."
-        pre_reboot_delay: 30

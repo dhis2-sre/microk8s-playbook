@@ -12,7 +12,7 @@
 - name: Allow SSH
   ufw:
     rule: allow
-    port: 22
+    port: 2222
     proto: tcp
 
 - name: Allow HTTP
@@ -55,16 +55,4 @@
   ufw:
     rule: allow
     port: 3300
-    proto: tcp
-
-- name: Allow Ceph RGW HTTP port
-  ufw:
-    rule: allow
-    port: 8080
-    proto: tcp
-
-- name: Allow Ceph RGW HTTPS port
-  ufw:
-    rule: allow
-    port: 443
     proto: tcp
