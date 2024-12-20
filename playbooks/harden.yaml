@@ -142,7 +142,7 @@
       command: sysctl -p
 
     # 7. Configure Firewall
-    - include_tasks: ./playbooks/_firewall.yaml
+    - include_tasks: ./_firewall.yaml
 
     # 8. Restart for Changes
     - name: Reboot the system if required

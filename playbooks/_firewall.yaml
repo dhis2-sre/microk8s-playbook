@@ -1,78 +1,70 @@
-- name: Configure Firewall
-  hosts: all
-  become: true
+- name: Install UFW
+  apt:
+    name: ufw
+    state: present
 
-  vars:
-    ansible_python_interpreter: /usr/bin/python3.10
+- name: Set UFW default policies
+  ufw:
+    state: enabled
+    logging: on
+    default: "deny"
 
-  tasks:
-    - name: Install UFW
-      apt:
-        name: ufw
-        state: present
+- name: Allow SSH
+  ufw:
+    rule: allow
+    port: 22
+    proto: tcp
 
-    - name: Set UFW default policies
-      ufw:
-        state: enabled
-        logging: on
-        default: "deny"
+- name: Allow HTTP
+  ufw:
+    rule: allow
+    port: 80
+    proto: tcp
 
-    - name: Allow SSH
-      ufw:
-        rule: allow
-        port: 22
-        proto: tcp
+- name: Allow HTTPS
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
 
-    - name: Allow HTTP
-      ufw:
-        rule: allow
-        port: 80
-        proto: tcp
+- name: Allow specific ports for MicroK8s
+  ufw:
+    rule: allow
+    port: 16443
+    proto: tcp
 
-    - name: Allow HTTPS
-      ufw:
-        rule: allow
-        port: 443
-        proto: tcp
+- name: Allow Ceph Monitor port
+  ufw:
+    rule: allow
+    port: 6789
+    proto: tcp
 
-    - name: Allow specific ports for MicroK8s
-      ufw:
-        rule: allow
-        port: 16443
-        proto: tcp
+- name: Allow Ceph OSD ports
+  ufw:
+    rule: allow
+    port: '6800:7300'
+    proto: tcp
 
-    - name: Allow Ceph Monitor port
-      ufw:
-        rule: allow
-        port: 6789
-        proto: tcp
+- name: Allow Ceph Manager port
+  ufw:
+    rule: allow
+    port: 7000
+    proto: tcp
 
-    - name: Allow Ceph OSD ports
-      ufw:
-        rule: allow
-        port: '6800:7300'
-        proto: tcp
+- name: Allow Ceph Client RBD port
+  ufw:
+    rule: allow
+    port: 3300
+    proto: tcp
 
-    - name: Allow Ceph Manager port
-      ufw:
-        rule: allow
-        port: 7000
-        proto: tcp
+- name: Allow Ceph RGW HTTP port
+  ufw:
+    rule: allow
+    port: 8080
+    proto: tcp
 
-    - name: Allow Ceph Client RBD port
-      ufw:
-        rule: allow
-        port: 3300
-        proto: tcp
-
-    - name: Allow Ceph RGW HTTP port
-      ufw:
-        rule: allow
-        port: 8080
-        proto: tcp
-
-    - name: Allow Ceph RGW HTTPS port
-      ufw:
-        rule: allow
-        port: 443
-        proto: tcp
+- name: Allow Ceph RGW HTTPS port
+  ufw:
+    rule: allow
+    port: 443
+    proto: tcp
