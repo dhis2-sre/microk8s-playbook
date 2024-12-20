@@ -27,10 +27,16 @@
     port: 443
     proto: tcp
 
-- name: Allow specific ports for MicroK8s
+- name: Allow MicroK8s API Server
   ufw:
     rule: allow
     port: 16443
+    proto: tcp
+
+- name: Allow MicroK8s Cluster Agent
+  ufw:
+    rule: allow
+    port: 25000
     proto: tcp
 
 - name: Allow Ceph Monitor port
