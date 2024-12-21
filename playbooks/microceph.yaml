@@ -47,7 +47,7 @@
   become: true
   become_method: sudo
   tasks:
-    - name: Join worker node to the Ceph cluster
+    - name: Join worker nodes to the Ceph cluster
       command: "microceph cluster join {{ hostvars[groups['master_nodes'][0]].join_tokens[inventory_hostname] }}"
 
 - name: Add Disks to MicroCeph Nodes
@@ -75,7 +75,7 @@
       command: >
         microk8s kubectl patch storageclass ceph-rbd -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
 
-    - name: Display MicroK8s status
+    - name: Display MicroCeph status
       command: microceph.ceph status
       register: ceph_status
 
