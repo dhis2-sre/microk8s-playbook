@@ -91,7 +91,7 @@
         state: present
 
     - name: Install Cert issuer
-      community.kubernetes.helm:
+      kubernetes.core.helm:
         kubeconfig: ./kube-config.yaml
         name: cert-issuer
         chart_repo_url: https://tonsv2.github.io/cert-issuer-chart
@@ -103,3 +103,4 @@
           email: "{{ cert_manager_email }}"
           server: https://acme-v02.api.letsencrypt.org/directory
           ingressClass: public
+        state: present
