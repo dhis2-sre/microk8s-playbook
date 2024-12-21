@@ -1,11 +1,7 @@
 - name: Install Microk8s
   hosts: all
-  gather_facts: yes
-  become: true
-  become_method: sudo
 
   vars:
-    ansible_python_interpreter: /usr/bin/python3.10
     microk8s_version: latest
 
   tasks:
@@ -58,9 +54,6 @@
 
 - name: Configure master node
   hosts: master_nodes
-  gather_facts: yes
-  become: true
-  become_method: sudo
   vars:
     microk8s_addons: dns ingress metrics-server cert-manager
     user: "{{ ansible_user_id }}"
@@ -90,6 +83,9 @@
         classic: yes
         state: present
 
+    - name: Install Helm Diff plugin
+      command: helm plugin install https://github.com/databus23/helm-diff
+
     - name: Install Cert issuer
       kubernetes.core.helm:
         kubeconfig: ./kube-config.yaml
@@ -103,4 +99,3 @@
           email: "{{ cert_manager_email }}"
           server: https://acme-v02.api.letsencrypt.org/directory
           ingressClass: public
-        state: present

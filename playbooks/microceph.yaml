@@ -1,11 +1,7 @@
 - name: Install MicroCeph
   hosts: all
-  gather_facts: yes
-  become: true
-  become_method: sudo
 
   vars:
-    ansible_python_interpreter: /usr/bin/python3.10
     microceph_version: latest/edge
 
   tasks:
@@ -17,8 +13,7 @@
 
 - name: Configure MicroCeph Master Node
   hosts: master_nodes
-  become: true
-  become_method: sudo
+
   tasks:
     - name: Bootstrap MicroCeph
       command: microceph cluster bootstrap
@@ -43,27 +38,18 @@
 
 - name: Join MicroCeph Worker Nodes
   hosts: worker_nodes
-  gather_facts: yes
-  become: true
-  become_method: sudo
   tasks:
     - name: Join worker nodes to the Ceph cluster
       command: "microceph cluster join {{ hostvars[groups['master_nodes'][0]].join_tokens[inventory_hostname] }}"
 
 - name: Add Disks to MicroCeph Nodes
   hosts: all
-  gather_facts: yes
-  become: true
-  become_method: sudo
   tasks:
     - name: Add disk
       command: microceph disk add --wipe /dev/sdb
 
 - name: Finalize MicroCeph Master Node
   hosts: master_nodes
-  gather_facts: yes
-  become: true
-  become_method: sudo
   tasks:
     - name: Enable MicroCeph
       command: microk8s enable rook-ceph

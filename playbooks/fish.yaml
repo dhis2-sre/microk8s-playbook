@@ -1,11 +1,7 @@
 - name: Configure Fish
   hosts: all
-  gather_facts: yes
-  become: true
-  become_method: sudo
 
   vars:
-    ansible_python_interpreter: /usr/bin/python3.10
     username: ubuntu
 
   tasks:
