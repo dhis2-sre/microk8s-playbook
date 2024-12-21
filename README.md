@@ -1,7 +1,6 @@
 # Run
 ```sh
-#ansible-playbook -i inventory.yaml playbook.yaml
-ansible-playbook -i inventory.yaml playbooks/fish.yaml playbooks/harden.yaml playbooks/microk8s.yaml playbooks/microceph.yaml playbooks/reboot.yaml
+ansible-playbook -i inventory.yaml main.yaml
 ```
 
 
@@ -10,5 +9,4 @@ ansible-playbook -i inventory.yaml playbooks/fish.yaml playbooks/harden.yaml pla
 * https://www.virtualizationhowto.com/2023/08/kubernetes-persistent-volume-setup-with-microk8s-rook-and-ceph/
 
 # TODO
-* Use a master playbook...
 * Remove sudo without password capabilities

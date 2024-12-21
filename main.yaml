@@ -1,0 +1,5 @@
+- import_playbook: playbooks/fish.yaml
+- import_playbook: playbooks/harden.yaml
+- import_playbook: playbooks/microk8s.yaml
+- import_playbook: playbooks/microceph.yaml
+- import_playbook: playbooks/reboot.yaml
