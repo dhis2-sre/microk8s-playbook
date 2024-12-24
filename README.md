@@ -6,6 +6,10 @@ Update the inventory with your server details
 ansible-playbook -i inventory.yaml main.yaml
 ```
 
+# MicroK8s
+
+* https://microk8s.io/docs/clustering
+
 # MicroCeph
 
 * https://microk8s.io/docs/how-to-ceph
