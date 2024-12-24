@@ -17,6 +17,13 @@
   tasks:
     - name: Bootstrap MicroCeph
       command: microceph cluster bootstrap
+      register: bootstrap_output
+      ignore_errors: yes
+
+    - name: Handle database online error and continue
+      debug:
+        msg: "Cluster already bootstrapped."
+      when: 'bootstrap_output.stderr is search("Error: Unable to initialize cluster: Database is online")'
 
     - name: Generate a token for each worker node
       command: microceph cluster add {{ item }}
