@@ -1,9 +1,8 @@
 - name: Install MicroCeph
   hosts: all
-
+  become: true
   vars:
     microceph_version: latest/edge
-
   tasks:
     - name: Install MicroCeph
       snap:
@@ -13,7 +12,7 @@
 
 - name: Configure MicroCeph Master Node
   hosts: master_nodes
-
+  become: true
   tasks:
     - name: Bootstrap MicroCeph
       command: microceph cluster bootstrap
@@ -45,18 +44,21 @@
 
 - name: Join MicroCeph Worker Nodes
   hosts: worker_nodes
+  become: true
   tasks:
     - name: Join worker nodes to the Ceph cluster
       command: "microceph cluster join {{ hostvars[groups['master_nodes'][0]].join_tokens[inventory_hostname] }}"
 
 - name: Add Disks to MicroCeph Nodes
   hosts: all
+  become: true
   tasks:
     - name: Add disk
       command: microceph disk add --wipe /dev/sdb
 
 - name: Finalize MicroCeph Master Node
   hosts: master_nodes
+  become: true
   tasks:
     - name: Enable MicroCeph
       command: microk8s enable rook-ceph

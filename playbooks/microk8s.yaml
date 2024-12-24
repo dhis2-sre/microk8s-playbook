@@ -1,5 +1,6 @@
 - name: Install Microk8s
   hosts: all
+  become: true
 
   vars:
     microk8s_version: latest
@@ -32,6 +33,7 @@
 
 - name: Get and execute join commands
   hosts: master_nodes
+  become: true
   tasks:
     - name: Generate and capture join commands for worker nodes
       shell: |
@@ -47,6 +49,7 @@
 
 - name: Join worker nodes
   hosts: worker_nodes
+  become: true
   tasks:
     - name: Join each worker node to the cluster
       command: "{{ hostvars[groups['master_nodes'][0]].microk8s_join_commands_list[play_hosts.index(inventory_hostname)] }}"
@@ -54,6 +57,7 @@
 
 - name: Configure master node
   hosts: master_nodes
+  become: true
   vars:
     microk8s_addons: dns ingress metrics-server cert-manager
     user: "{{ ansible_user_id }}"

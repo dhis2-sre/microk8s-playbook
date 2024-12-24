@@ -10,3 +10,4 @@ ansible-playbook -i inventory.yaml main.yaml
 
 # TODO
 * Remove sudo without password capabilities
+* Make Ceph cluster deployment idempotent
