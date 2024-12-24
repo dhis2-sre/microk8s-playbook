@@ -138,6 +138,3 @@
 
     - name: Apply sysctl changes
       command: sysctl -p
-
-    # 7. Configure Firewall
-    - include_tasks: ./_firewall.yaml
