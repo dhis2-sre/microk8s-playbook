@@ -77,6 +77,48 @@
         dest: ../kubeconfig/{{ inventory_hostname }}.yaml
         flat: yes
 
+    # Not relying on an external helm chart would be ideal but the below is not working
+    #    # Using kubectl for the sake of avoiding helm since that would not only require installing helm and helm diff plugin but also having an external chart... All of which for a single resource
+    #    # Installing using the Ansible module kubernetes.core.k8s resulted in: fatal: [node-0]: FAILED! => {"changed": false, "msg": "Failed to import the required Python library (kubernetes) on node-0's Python /usr/bin/python3.10. Please read the module documentation and install it in the appropriate location. If the required library is installed, but Ansible is using the wrong Python interpreter, please consult the documentation on ansible_python_interpreter"}
+    #    - name: Install Cert Manager Cluster Issuer using kubectl
+    #      shell: |
+    #        microk8s kubectl apply -f - <<EOF
+    #        apiVersion: cert-manager.io/v1
+    #        kind: ClusterIssuer
+    #        metadata:
+    #          name: cert-issuer
+    #        spec:
+    #          acme:
+    #            email: "{{ cert_manager_email }}"
+    #            server: https://acme-v02.api.letsencrypt.org/directory
+    #            privateKeySecretRef:
+    #              name: cert-issuer-account-key
+    #            solvers:
+    #              - http01:
+    #                  ingress:
+    #                    class: public
+    #        EOF
+
+    #    - name: Install Cert Manager Cluster Issuer
+    #      kubernetes.core.k8s:
+    #        kubeconfig: ../kubeconfig/{{ inventory_hostname }}.yaml
+    #        state: present
+    #        definition:
+    #          apiVersion: cert-manager.io/v1
+    #          kind: ClusterIssuer
+    #          metadata:
+    #            name: cert-issuer
+    #          spec:
+    #            acme:
+    #              email: "{{ cert_manager_email }}"
+    #              server: https://acme-v02.api.letsencrypt.org/directory
+    #              privateKeySecretRef:
+    #                name: cert-issuer-account-key
+    #              solvers:
+    #                - http01:
+    #                  ingress:
+    #                    class: public
+
     - name: Install Helm
       snap:
         name: helm
