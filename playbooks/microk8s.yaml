@@ -136,7 +136,7 @@
       kubernetes.core.helm:
         kubeconfig: ./kube-config.yaml
         name: cert-issuer
-        chart_repo_url: https://tonsv2.github.io/cert-issuer-chart
+        chart_repo_url: https://dhis2-sre.github.io/cert-issuer-helm
         chart_ref: cert-issuer
         release_state: present
         namespace: cert-manager
