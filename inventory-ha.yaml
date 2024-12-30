@@ -1,0 +1,22 @@
+all:
+  children:
+    master_nodes:
+      hosts:
+        node-0:
+          ansible_host: 158.37.66.43
+          ansible_port: 2222
+          ansible_user: ubuntu
+    worker_nodes:
+      hosts:
+        node-1:
+          ansible_host: 158.37.66.49
+          ansible_port: 2222
+          ansible_user: ubuntu
+        node-2:
+          ansible_host: 158.37.66.99
+          ansible_port: 2222
+          ansible_user: ubuntu
+#        node-3:
+#          ansible_host: 158.37.66.43
+#          ansible_port: 2222
+#          ansible_user: ubuntu

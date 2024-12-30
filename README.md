@@ -3,7 +3,7 @@
 Update the inventory with your server details
 
 ```sh
-ansible-playbook -i inventory.yaml main.yaml
+ansible-playbook -i inventory.yaml main.yaml --ask-become-pass
 ```
 
 # MicroK8s

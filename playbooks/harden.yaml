@@ -47,7 +47,7 @@
 
     - name: Restart SSH service
       service:
-        name: sshd
+        name: ssh
         state: restarted
 
     # 3. Minimize Attack Surface

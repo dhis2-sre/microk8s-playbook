@@ -1,0 +1,27 @@
+- name: Configure Ceph Firewall rules
+  hosts: all
+  become: true
+  tasks:
+    - name: Allow Ceph Monitor port
+      ufw:
+        rule: allow
+        port: 6789
+        proto: tcp
+
+    - name: Allow Ceph OSD ports
+      ufw:
+        rule: allow
+        port: '6800:7300'
+        proto: tcp
+
+    - name: Allow Ceph Manager port
+      ufw:
+        rule: allow
+        port: 7000
+        proto: tcp
+
+    - name: Allow Ceph Client RBD port
+      ufw:
+        rule: allow
+        port: 3300
+        proto: tcp

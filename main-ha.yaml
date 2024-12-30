@@ -2,5 +2,7 @@
 - import_playbook: playbooks/harden.yaml
 - import_playbook: playbooks/firewall-common.yaml
 - import_playbook: playbooks/firewall-microk8s.yaml
-- import_playbook: playbooks/microk8s.yaml
+- import_playbook: playbooks/firewall-ceph.yaml
+- import_playbook: playbooks/microk8s-ha.yaml
+- import_playbook: playbooks/microceph.yaml
 - import_playbook: playbooks/reboot.yaml
