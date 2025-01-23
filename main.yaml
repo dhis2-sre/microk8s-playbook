@@ -1,6 +1,6 @@
-- import_playbook: playbooks/fish.yaml
-- import_playbook: playbooks/harden.yaml
-- import_playbook: playbooks/firewall-common.yaml
-- import_playbook: playbooks/firewall-microk8s.yaml
-- import_playbook: playbooks/microk8s.yaml
-- import_playbook: playbooks/reboot.yaml
+- name: Configure Single Node
+  hosts: all
+  roles:
+    - common
+    - single
+    - finalize

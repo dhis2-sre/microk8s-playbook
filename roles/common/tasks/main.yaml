@@ -1,0 +1,18 @@
+- name: Configure Fish shell
+  import_tasks: fish.yaml
+  tags: install-fish-shell
+
+- name: Configure system hardening
+  become: true
+  import_tasks: harden.yaml
+  tags: harden
+
+- name: Configure firewall
+  become: true
+  import_tasks: firewall.yaml
+  tags: basic-firewall
+
+- name: Configure MicroK8s firewall
+  become: true
+  import_tasks: firewall-microk8s.yaml
+  tags: microk8s-firewall

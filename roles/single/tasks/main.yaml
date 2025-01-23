@@ -1,0 +1,4 @@
+- name: Install MicroK8s
+  become: true
+  import_tasks: microk8s.yaml
+  tags: microk8s-single-node

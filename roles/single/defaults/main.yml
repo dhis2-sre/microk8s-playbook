@@ -1,0 +1,4 @@
+microk8s_version: latest
+microk8s_addons: dns ingress metrics-server cert-manager hostpath-storage
+user: "{{ ansible_user_id }}"
+cert_manager_email: someone@something.com
