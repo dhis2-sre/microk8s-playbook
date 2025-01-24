@@ -1,0 +1,3 @@
+microk8s_version: latest
+microk8s_addons: dns ingress metrics-server cert-manager
+cert_manager_email: someone@something.com

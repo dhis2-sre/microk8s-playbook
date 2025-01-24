@@ -1,0 +1,23 @@
+- name: Enable MicroCeph
+  command: microk8s enable rook-ceph
+
+- name: Connect to MicroCeph Cluster
+  command: microk8s connect-external-ceph
+
+- name: Set ceph-rbd as the default storage class
+  command: >
+    microk8s kubectl patch storageclass ceph-rbd -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
+
+- name: Display MicroCeph Disks
+  command: microceph disk list
+  register: ceph_disks
+
+- debug:
+    var: ceph_disks.stdout
+
+- name: Display MicroCeph status
+  command: microceph.ceph status
+  register: ceph_status
+
+- debug:
+    var: ceph_status.stdout

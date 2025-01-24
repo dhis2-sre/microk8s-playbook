@@ -1,0 +1,5 @@
+- name: Install MicroCeph
+  snap:
+    name: microceph
+    channel: "{{ microceph_version }}"
+    state: present

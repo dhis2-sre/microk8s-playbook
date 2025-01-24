@@ -99,49 +99,6 @@
     #              name: cert-issuer-account-key
     #            solvers:
     #              - http01:
-    #                  ingress:
-    #                    class: public
-    #        EOF
-
-    #    - name: Install Cert Manager Cluster Issuer
-    #      kubernetes.core.k8s:
-    #        kubeconfig: ../kubeconfig/{{ inventory_hostname }}.yaml
-    #        state: present
-    #        definition:
-    #          apiVersion: cert-manager.io/v1
-    #          kind: ClusterIssuer
-    #          metadata:
-    #            name: cert-issuer
-    #          spec:
-    #            acme:
-    #              email: "{{ cert_manager_email }}"
-    #              server: https://acme-v02.api.letsencrypt.org/directory
-    #              privateKeySecretRef:
-    #                name: cert-issuer-account-key
-    #              solvers:
-    #                - http01:
-    #                  ingress:
-    #                    class: public
-
-    - name: Install Helm
-      snap:
-        name: helm
-        classic: yes
-        state: present
-
-    - name: Install Helm Diff plugin
-      command: helm plugin install https://github.com/databus23/helm-diff
-
-    - name: Install Cert issuer
-      kubernetes.core.helm:
-        kubeconfig: ./kube-config.yaml
-        name: cert-issuer
-        chart_repo_url: https://dhis2-sre.github.io/cert-issuer-helm
-        chart_ref: cert-issuer
-        release_state: present
-        namespace: cert-manager
-        create_namespace: true
-        values:
-          email: "{{ cert_manager_email }}"
-          server: https://acme-v02.api.letsencrypt.org/directory
-          ingressClass: public
+    - name: Configure cert issuer
+      roles:
+        - cert-issuer

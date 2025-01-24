@@ -1,0 +1,2 @@
+- name: Add disk
+  command: microceph disk add --wipe /dev/sdb

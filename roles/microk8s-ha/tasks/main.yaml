@@ -1,0 +1,23 @@
+- name: Install MicroK8s
+  hosts: all
+  become: true
+  import_tasks: install.yaml
+  tags: install-microk8s
+
+- name: Join commands
+  hosts: master_nodes
+  become: true
+  import_tasks: join_commands.yaml
+  tags: join-commands
+
+- name: Join worker nodes
+  hosts: worker_nodes
+  become: true
+  import_tasks: join_workers.yaml
+  tags: join-workers
+
+- name: Configure master
+  hosts: master_nodes
+  become: true
+  import_tasks: configure_master.yaml
+  tags: configure-master

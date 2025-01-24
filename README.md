@@ -1,9 +1,31 @@
 # Quick start
 
+## Single node cluster
+
 Update the inventory with your server details
 
 ```sh
-ansible-playbook -i inventory.yaml main.yaml --ask-become-pass
+./inventory/single/hosts.yaml
+```
+
+Run the playbook
+
+```sh
+ansible-playbook -i ./inventory/single/hosts.yaml main.yaml --ask-become-pass
+```
+
+## Multi node cluster
+
+Update the inventory with your server details
+
+```sh
+./inventory/ha/hosts.yaml
+```
+
+Run the playbook
+
+```sh
+ansible-playbook -i ./inventory/ha/hosts.yaml main-ha.yaml --ask-become-pass
 ```
 
 # MicroK8s

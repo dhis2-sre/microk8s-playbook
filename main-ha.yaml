@@ -1,8 +1,13 @@
-- import_playbook: playbooks/fish.yaml
-- import_playbook: playbooks/harden.yaml
-- import_playbook: playbooks/firewall-common.yaml
-- import_playbook: playbooks/firewall-microk8s.yaml
-- import_playbook: playbooks/firewall-ceph.yaml
+- name: Run common tasks
+  hosts: all
+  roles:
+    - common
+
 - import_playbook: playbooks/microk8s-ha.yaml
 - import_playbook: playbooks/microceph.yaml
-- import_playbook: playbooks/reboot.yaml
+- import_playbook: playbooks/firewall-ceph.yaml
+
+- name: Finalize
+  hosts: all
+  roles:
+    - finalize

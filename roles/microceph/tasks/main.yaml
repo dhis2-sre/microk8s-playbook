@@ -1,0 +1,29 @@
+- name: Install Micro Ceph
+  hosts: all
+  become: true
+  import_tasks: install.yaml
+  tags: install-microceph
+
+- name: Configure master
+  hosts: master_nodes
+  become: true
+  import_tasks: configure_master.yaml
+  tags: configure-master
+
+- name: Join MicroCeph Worker Nodes
+  hosts: worker_nodes
+  become: true
+  import_tasks: join_workers.yaml
+  tags: join-workers
+
+- name: Configure disks
+  hosts: all
+  become: true
+  import_tasks: configure_disks.yaml
+  tags: configure-disks
+
+- name: Finalize MicroCeph Master Node
+  hosts: master_nodes
+  become: true
+  import_tasks: finalize_master.yaml
+  tags: finalize-master
