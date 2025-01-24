@@ -3,5 +3,5 @@
 
 - fetch:
     src: ./kube-config.yaml
-    dest: ../kubeconfig/{{ inventory_hostname }}.yaml
+    dest: ./kubeconfig/{{ inventory_hostname }}.yaml
     flat: yes
