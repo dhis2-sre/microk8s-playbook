@@ -1,13 +1,16 @@
 - name: Run common tasks
+  hosts: all
   become: true
   roles:
     - common
 
 - name: Configure Fish shell
+  hosts: all
   roles:
     - fish
 
 - name: Configure single node Kubernetes cluster
+  hosts: all
   become: true
   roles:
     - single
