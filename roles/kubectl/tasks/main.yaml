@@ -1,0 +1,7 @@
+- name: Get kubectl config
+  shell: microk8s config > ./kube-config.yaml
+
+- fetch:
+    src: ./kube-config.yaml
+    dest: ../kubeconfig/{{ inventory_hostname }}.yaml
+    flat: yes

@@ -1,6 +1,10 @@
-- name: Configure Fish shell
-  import_tasks: fish.yaml
-  tags: install-fish-shell
+- name: Update and upgrade apt packages
+  import_tasks: update.yaml
+  tags: update-apt
+
+- name: Configure Snap
+  import_tasks: snap.yaml
+  tags: configure-snap
 
 - name: Configure system hardening
   become: true

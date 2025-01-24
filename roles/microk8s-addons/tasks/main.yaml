@@ -1,0 +1,9 @@
+- name: Enable common MicroK8s addons
+  command: microk8s enable {{ microk8s_addons }}
+
+- name: Display MicroK8s status
+  command: microk8s status --wait-ready
+  register: microk8s_status
+
+- debug:
+    var: microk8s_status.stdout

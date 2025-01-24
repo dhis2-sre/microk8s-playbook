@@ -1,6 +1,14 @@
-- name: Configure Single Node
-  hosts: all
+- name: Run common tasks
+  become: true
   roles:
     - common
+
+- name: Configure Fish shell
+  roles:
+    - fish
+
+- name: Configure single node Kubernetes cluster
+  become: true
+  roles:
     - single
     - finalize

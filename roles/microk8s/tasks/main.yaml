@@ -1,0 +1,9 @@
+- name: Install MicroK8s
+  snap:
+    name: microk8s
+    classic: yes
+    channel: "{{ microk8s_version }}"
+    state: present
+
+- name: Refresh MicroK8s certificates
+  command: microk8s refresh-certs -e ca.crt

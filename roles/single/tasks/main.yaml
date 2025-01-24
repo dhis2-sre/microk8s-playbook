@@ -1,4 +1,15 @@
 - name: Install MicroK8s
-  become: true
-  import_tasks: microk8s.yaml
-  tags: microk8s-single-node
+  include_role:
+    name: microk8s
+
+- name: Install MicroK8s Addons
+  include_role:
+    name: microk8s-addons
+
+- name: Get kubectl config
+  include_role:
+    name: kubectl
+
+- name: Configure cert issuer
+  include_role:
+    name: cert-issuer
