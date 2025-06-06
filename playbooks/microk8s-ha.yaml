@@ -99,6 +99,6 @@
     #              name: cert-issuer-account-key
     #            solvers:
     #              - http01:
-    - name: Configure cert issuer
-      roles:
-        - cert-issuer
+- name: Configure cert issuer
+  roles:
+    - ../roles/cert-issuer
