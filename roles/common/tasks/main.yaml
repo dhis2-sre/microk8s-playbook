@@ -1,8 +1,10 @@
 - name: Update and upgrade apt packages
+  become: true
   import_tasks: update.yaml
   tags: update-apt
 
 - name: Configure Snap
+  become: true
   import_tasks: snap.yaml
   tags: configure-snap
 
