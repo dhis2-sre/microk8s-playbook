@@ -100,5 +100,7 @@
     #            solvers:
     #              - http01:
 - name: Configure cert issuer
+  hosts: master_nodes
+  become: true
   roles:
     - ../roles/cert-issuer

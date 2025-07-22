@@ -42,3 +42,4 @@ ansible-playbook -i ./inventory/ha/hosts.yaml main-ha.yaml --ask-become-pass
 * The playbook currently only support one master node. It should be possible to deploy with multiple master nodes
 * Remove sudo without password capabilities as a final step
 * Make Ceph cluster deployment idempotent
+* Remove fish shell... It was nice for debugging

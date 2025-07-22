@@ -1,4 +1,4 @@
-- name: Configure Ceph Firewall rules
+- name: Configure HA Firewall rules
   hosts: all
   become: true
   tasks:
@@ -20,8 +20,14 @@
         port: 7000
         proto: tcp
 
-    - name: Allow Ceph Client RBD port
+    - name: Allow Ceph Join port
       ufw:
         rule: allow
-        port: 3300
+        port: 7443
+        proto: tcp
+
+    - name: Allow MicroK8s cluster agent join port
+      ufw:
+        rule: allow
+        port: 25000
         proto: tcp

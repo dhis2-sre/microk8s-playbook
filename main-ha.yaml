@@ -3,11 +3,12 @@
   roles:
     - common
 
+- import_playbook: playbooks/firewall-ha.yaml
 - import_playbook: playbooks/microk8s-ha.yaml
 - import_playbook: playbooks/microceph.yaml
-- import_playbook: playbooks/firewall-ceph.yaml
 
 - name: Finalize
   hosts: all
+  become: true
   roles:
     - finalize
