@@ -1,0 +1,40 @@
+- name: Enable common MicroK8s addons
+  command: microk8s enable {{ microk8s_addons }}
+
+- name: Display MicroK8s status
+  command: microk8s status --wait-ready
+  register: microk8s_status
+
+- debug:
+    var: microk8s_status.stdout
+
+- name: Get kubectl config
+  shell: microk8s config > ./kube-config.yaml
+
+- fetch:
+    src: ./kube-config.yaml
+    dest: ../kubeconfig/{{ inventory_hostname }}.yaml
+    flat: yes
+
+- name: Install Helm
+  snap:
+    name: helm
+    classic: yes
+    state: present
+
+- name: Install Helm Diff plugin
+  command: helm plugin install https://github.com/databus23/helm-diff
+
+- name: Install Cert issuer
+  kubernetes.core.helm:
+    kubeconfig: ./kube-config.yaml
+    name: cert-issuer
+    chart_repo_url: https://dhis2-sre.github.io/cert-issuer-helm
+    chart_ref: cert-issuer
+    release_state: present
+    namespace: cert-manager
+    create_namespace: true
+    values:
+      email: "{{ cert_manager_email }}"
+      server: https://acme-v02.api.letsencrypt.org/directory
+      ingressClass: public

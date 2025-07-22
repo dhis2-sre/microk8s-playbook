@@ -1,0 +1,27 @@
+- name: Bootstrap MicroCeph
+  command: microceph cluster bootstrap
+  register: bootstrap_output
+  ignore_errors: yes
+
+- name: Handle database online error and continue
+  debug:
+    msg: "Cluster already bootstrapped."
+  when: 'bootstrap_output.stderr is search("Error: Unable to initialize cluster: Database is online")'
+
+- name: Generate a token for each worker node
+  command: microceph cluster add {{ item }}
+  register: join_tokens_raw
+  with_items: "{{ groups['worker_nodes'] }}"
+  loop_control:
+    label: "{{ item }}"
+
+- name: Initialize join_tokens as an empty dictionary
+  set_fact:
+    join_tokens: {}
+
+- name: Add tokens to join_tokens dictionary
+  set_fact:
+    join_tokens: "{{ join_tokens | combine({groups['worker_nodes'][item]: join_tokens_raw.results[item].stdout}) }}"
+  loop: "{{ range(0, groups['worker_nodes'] | length) | list }}"
+  loop_control:
+    loop_var: item

@@ -1,0 +1,12 @@
+- name: Install and configure MicroK8s
+  include_role:
+    name: microk8s-ha
+
+- name: Install and configure MicroCeph
+  include_role:
+    name: microceph
+
+- name: Configure Ceph Firewall rules
+  become: true
+  import_tasks: firewall-ceph.yaml
+  tags: ceph-firewall

@@ -1,0 +1,1 @@
+microk8s_addons: dns ingress metrics-server cert-manager

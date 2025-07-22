@@ -1,0 +1,15 @@
+- name: Install Fish shell
+  become: true
+  apt:
+    name: fish
+    state: present
+
+- name: Verify Fish shell path is valid
+  stat:
+    path: /usr/bin/fish
+  register: fish_shell
+
+- name: Set fish as the default shell
+  become: true
+  command: chsh -s /usr/bin/fish "{{ username }}"
+  when: fish_shell.stat.exists

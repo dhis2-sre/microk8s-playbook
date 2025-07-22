@@ -1,0 +1,10 @@
+- name: Install snapd
+  apt:
+    name: snapd
+    state: present
+
+- name: Ensure snapd service is started
+  systemd:
+    name: snapd
+    state: started
+    enabled: yes

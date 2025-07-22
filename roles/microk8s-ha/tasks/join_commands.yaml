@@ -1,0 +1,11 @@
+- name: Generate and capture join commands for worker nodes
+  shell: |
+    for i in $(seq 1 {{ groups['worker_nodes'] | length }}); do
+      microk8s add-node | grep microk8s | head -2 | tail -1;
+    done
+  register: microk8s_join_commands
+  become: true
+
+- name: Split join commands into a list
+  set_fact:
+    microk8s_join_commands_list: "{{ microk8s_join_commands.stdout_lines }}"

@@ -1,6 +1,17 @@
-- import_playbook: playbooks/fish.yaml
-- import_playbook: playbooks/harden.yaml
-- import_playbook: playbooks/firewall.yaml
-- import_playbook: playbooks/microk8s.yaml
-- import_playbook: playbooks/microceph.yaml
-- import_playbook: playbooks/reboot.yaml
+- name: Run common tasks
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Configure Fish shell
+  hosts: all
+  roles:
+    - fish
+
+- name: Configure single node Kubernetes cluster
+  hosts: all
+  become: true
+  roles:
+    - single
+    - finalize

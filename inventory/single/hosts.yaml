@@ -1,0 +1,6 @@
+all:
+  hosts:
+    cluster:
+      ansible_host: 192.168.124.225
+      ansible_port: 2222
+      ansible_user: ubuntu

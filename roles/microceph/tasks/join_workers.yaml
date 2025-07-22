@@ -1,0 +1,2 @@
+- name: Join worker nodes to the Ceph cluster
+  command: "microceph cluster join {{ hostvars[groups['master_nodes'][0]].join_tokens[inventory_hostname] }}"

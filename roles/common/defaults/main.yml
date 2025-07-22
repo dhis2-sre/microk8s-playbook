@@ -1,0 +1,4 @@
+username: ubuntu
+allowed_ssh_users:
+  - ubuntu
+ssh_port: 2222

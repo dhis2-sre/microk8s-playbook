@@ -1,0 +1,33 @@
+- name: Configure HA Firewall rules
+  hosts: all
+  become: true
+  tasks:
+    - name: Allow Ceph Monitor port
+      ufw:
+        rule: allow
+        port: 6789
+        proto: tcp
+
+    - name: Allow Ceph OSD ports
+      ufw:
+        rule: allow
+        port: '6800:7300'
+        proto: tcp
+
+    - name: Allow Ceph Manager port
+      ufw:
+        rule: allow
+        port: 7000
+        proto: tcp
+
+    - name: Allow Ceph Join port
+      ufw:
+        rule: allow
+        port: 7443
+        proto: tcp
+
+    - name: Allow MicroK8s cluster agent join port
+      ufw:
+        rule: allow
+        port: 25000
+        proto: tcp
